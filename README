@@ -21,6 +21,12 @@ We append some ideas into brainfunny, such as:
   %100  tells to virtual machine, puts program from address 100.
   #100  jumps to address 100.
 
+Consider the program
+    $0 =5
+    $3 =0
+    $10 =3
+the value in $10 is 3, $$10 is 0 ($$10 = $3), and $$$10 is 5 ($$$10 = $0). Dollor sign can take value as reference.
+
 [-] Process Inside
 
 Starting virtual machine, you can give one or more brainfuck (may brainfunny) source code, like
