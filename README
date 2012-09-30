@@ -1,13 +1,12 @@
 An extension of Brainfuck with small virtual machine
 
-Author: Rifur Ni.
-Declare CC0 1.0: http://creativecommons.org/publicdomain/zero/1.0/deed.zh_TW
+Copyright (c) 2012, Rifur Ni.
 
 [-] Introduction
 
 Brainfuck is a small programming language which just has eight instructions, created in 1993 by Urban Müller.
 
-We write a small virtual machine for brainfuck, and with something new syntax.
+We write a small virtual machine for brainfuck, and with new syntax.
 
 [-] Brainfunny's Syntax
 
@@ -25,15 +24,15 @@ We append some ideas into brainfunny, such as:
 [-] Process Inside
 
 Starting virtual machine, you can give one or more brainfuck (may brainfunny) source code, like
-  ./bfInt A.bf B.bf C.bf
-it will generate three process, time sharing, to run those program.
+    ./bfInt A.bf B.bf C.bf
+it will generate three processes, time sharing, to run those program. Each program has own code segment and data segment.
 
 [-] Build
 
 In default, we use clang++ as our compiler, you can use what you want.
-  $make
+    $make
 then we will get bfInt, that is our virtual machine (with interpreter)
-  ./bfInt A.bf
+    ./bfInt A.bf
 to run it.
 
 
