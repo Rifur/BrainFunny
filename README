@@ -11,7 +11,7 @@ We write a small virtual machine for brainfuck, and with new syntax.
 [-] Brainfunny's Syntax
 
 There is an extension for brainfuck's syntax, not strictly, may be equivalent to original. Let us call it "Brainfunny":
-  $2    moves the data pointer to position three. Equivalently, we can imagine that the position 0 (may -1) are signed a special symbol, may be a star symbol or something you like. We move the data pointer backward until meet the special symbol, then move k steps (if $k) forward.
+  $2    moves the data pointer to position two. Equivalently, we can imagine that the position 0 (may -1) are signed a special symbol, may be a star symbol or something you like. We move the data pointer backward until meet the special symbol, then move k steps (if $k) forward.
 
   +3    equivalent to "+++" in brainfuck.
   -4    equivalent to "----" in brainfuck.
