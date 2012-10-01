@@ -8,7 +8,7 @@
 #include <queue>
 #include "BF_Proc.h"
 
-#define TickMax 	128
+#define TickMax 	10
 
 using namespace std;
 
@@ -31,7 +31,7 @@ public:
 	void	Halt();
 
 private:
-	BF_Proc& ContextSwitch();
+	BF_Proc* ContextSwitch();
 	void	Terminate();
 
 private:

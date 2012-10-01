@@ -1,6 +1,6 @@
 #ifndef __BF_PROC_H__
 #define __BF_PROC_H__ 1
-
+#include <stdio.h>
 #define	SegSize		4096
 #define	CodeAddr	4000
 #define	DataAddr	4001
@@ -10,7 +10,7 @@
 class BF_Proc
 {
 public:
-	BF_Proc();
+	BF_Proc(int id);
 	~BF_Proc();
 
 	int	*dataSeg;
@@ -23,6 +23,7 @@ public:
 	char	brk_dp;	
 
 	int	codeSegLen;
+	int	pid;
 
 public:
 	char	Fetch();

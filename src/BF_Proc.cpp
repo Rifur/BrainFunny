@@ -1,7 +1,8 @@
 #include "BF_Proc.h"
 
-BF_Proc::BF_Proc()
+BF_Proc::BF_Proc(int id)
 {
+	pid = id;
 	dataSeg = new int [SegSize];
 	codeSeg = new char [SegSize];
 

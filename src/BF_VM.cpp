@@ -12,7 +12,7 @@ void	BF_VM::Init(string str)
 
 	fsrc.open(str.c_str(), ios::in);
 
-	BF_Proc *pr = new BF_Proc();
+	BF_Proc *pr = new BF_Proc(proc.size());
 	proc.push(pr);
 	BF_Proc &p = *pr;
 
@@ -41,59 +41,59 @@ void	BF_VM::Init(string str)
 
 int	BF_VM::Run()
 {
-	BF_Proc &p = *proc.front();
+	BF_Proc *p = proc.front();
 	char ins;
 
 	while(1) {
-		ins = p.Fetch();
+		ins = p->Fetch();
 
-		//printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d tick %d\n", *p.dp, p.dataSeg[*p.dp], *p.pc, p.codeSeg[*p.pc]=='\n'? ' ':p.codeSeg[*p.pc], p.brk_dp, p.brk[p.brk_dp], tick); 
+		// printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick); 
 		//sleep(1);
 		switch(ins) 
 		{
 		case '>':
-			p.Right();
+			p->Right();
 			break;
 
 		case '<':
-			p.Left();
+			p->Left();
 			break;
 
 		case '+':
-			Inc(p);
+			Inc(*p);
 			break;
 
 		case '-':
-			Dec(p);
+			Dec(*p);
 			break;
 
 		case '.':
-			Put(p);
+			Put(*p);
 			break;
 
 		case ',':
-			Get(p);
+			Get(*p);
 			break;
 
 		case '[':
-			BeginLoop(p);
+			BeginLoop(*p);
 			break;
 
 		case ']':
-			EndLoop(p);
+			EndLoop(*p);
 			break;
 
 		// new syntax
 		case '$':
-			Ref(p);
+			Ref(*p);
 			break;
 
 		case '=':
-			p.dataSeg[*p.dp] = atoi(&p.codeSeg[*p.pc+1]);		
+			p->dataSeg[*p->dp] = atoi(&p->codeSeg[*p->pc+1]);		
 			break;
 
 		case '#':
-			*p.pc = atoi(&p.codeSeg[*p.pc+1]) - 1;
+			*p->pc = atoi(&p->codeSeg[*p->pc+1]) - 1;
 			break;
 
 		case '!':
@@ -101,9 +101,10 @@ int	BF_VM::Run()
 			Terminate();
 			p = ContextSwitch();
 			break;
+			
 		}
 
-		++*p.pc;
+		++*p->pc;
 		--tick;
 
 		if(!tick) {
@@ -114,20 +115,21 @@ int	BF_VM::Run()
 	return 0;
 }
 
-BF_Proc& BF_VM::ContextSwitch()
+BF_Proc* BF_VM::ContextSwitch()
 {
+	tick = TickMax;
+
 	if(proc.size() == 0) {
 			printf("(Halt)\n");
 			exit(0);
 	}
 
-	if(proc.size() > 2) {
+	if(proc.size() > 1) {
 		proc.push(proc.front());
 		proc.pop();
 	}
 
-	tick = TickMax;
-	return *proc.front();
+	return proc.front();
 }
 
 void BF_VM::Terminate()
