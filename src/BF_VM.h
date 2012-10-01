@@ -8,7 +8,7 @@
 #include <queue>
 #include "BF_Proc.h"
 
-#define TickMax 	10
+#define TickMax 	128
 
 using namespace std;
 

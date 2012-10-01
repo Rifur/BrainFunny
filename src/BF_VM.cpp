@@ -205,8 +205,8 @@ void	BF_VM::Ref(BF_Proc & p)
 	while(p.codeSeg[*p.pc+m_num] == '$') {
 		++m_num;
 	}
-	*p.pc += m_num;
-	tmp = atoi(&p.codeSeg[*p.pc]);
+	*p.pc += m_num - 1;
+	tmp = atoi(&p.codeSeg[*p.pc + 1]);
 
 	while(--m_num) {
 		tmp = p.dataSeg[tmp];
