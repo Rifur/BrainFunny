@@ -31,8 +31,8 @@ the value in $10 is 3, $$10 is 0 ($$10 = $3), and $$$10 is 5 ($$$10 = $0). Dollo
 [-] Process Inside
 
 Starting virtual machine, you can give one or more brainfuck (may brainfunny) source code, like
-    ./bfInt A.bf B.bf C.bf
-it will generate three processes, time sharing, to run those program. Each program has own code segment and data segment.
+    ./bfInt procA.bf procB.bf procC.bf
+it will generate three processes, time sharing, to run those program which prints A, B and C alternately. Each program has own code segment and data segment.
 
 [-] Build
 
