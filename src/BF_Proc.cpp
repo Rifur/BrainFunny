@@ -26,16 +26,6 @@ char BF_Proc::Fetch()
 	return codeSeg[*pc];
 }
 
-void BF_Proc::Left()
-{
-	--*dp;
-}
-
-void BF_Proc::Right()
-{
-	++*dp;
-}
-
 BF_Proc::~BF_Proc()
 {
 	delete [] dataSeg;

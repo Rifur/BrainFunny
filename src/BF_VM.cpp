@@ -27,8 +27,7 @@ void	BF_VM::Init(string str)
 		for(int i=0; i<buf.length(); ++i) {
 			p.codeSeg[p.codeSegLen] = s[i];
 
-			switch(p.codeSeg[p.codeSegLen]) {
-			case ' ':
+			switch(s[i]) {
 			case '\t':
 			case '\n':
 				continue;
@@ -49,14 +48,14 @@ int	BF_VM::Run()
 
 		// printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick); 
 		//sleep(1);
-		switch(ins) 
+		switch(ins)
 		{
 		case '>':
-			p->Right();
+			Right(*p);
 			break;
 
 		case '<':
-			p->Left();
+			Left(*p);
 			break;
 
 		case '+':
@@ -89,7 +88,7 @@ int	BF_VM::Run()
 			break;
 
 		case '=':
-			p->dataSeg[*p->dp] = atoi(&p->codeSeg[*p->pc+1]);		
+			Assign(*p);
 			break;
 
 		case '#':
@@ -132,21 +131,31 @@ BF_Proc* BF_VM::ContextSwitch()
 	return proc.front();
 }
 
-void BF_VM::Terminate()
+void	BF_VM::Terminate()
 {
 	proc.pop();
+}
+
+void	BF_VM::Left(BF_Proc & p)
+{
+	--*p.dp;
+}
+
+void	BF_VM::Right(BF_Proc & p)
+{
+	++*p.dp;
 }
 
 void	BF_VM::Inc(BF_Proc & p)
 {
 	int i = atoi(&p.codeSeg[*p.pc+1]);
-	p.dataSeg[*p.dp] += i || p.codeSeg[*p.pc+1]=='0' ? i : 1;
+	p.dataSeg[*p.dp] += (i || p.codeSeg[*p.pc+1]=='0' ? i : 1);
 }
 
 void	BF_VM::Dec(BF_Proc & p)
 {
 	int i = atoi(&p.codeSeg[*p.pc+1]); 
-	p.dataSeg[*p.dp] -= i || p.codeSeg[*p.pc+1]=='0' ? i : 1;
+	p.dataSeg[*p.dp] -= (i || p.codeSeg[*p.pc+1]=='0' ? i : 1);
 }
 
 void	BF_VM::Put(BF_Proc & p)
@@ -213,4 +222,33 @@ void	BF_VM::Ref(BF_Proc & p)
 	}
 
 	*p.dp = tmp;
+}
+
+void	BF_VM::Assign(BF_Proc & p)
+{
+	char	*str = &p.codeSeg[*p.pc+1];	
+	int	tmp = atoi(str);
+
+	if(tmp || str[0]=='0') {
+		p.dataSeg[*p.dp] = tmp;
+		return;
+	}
+
+	switch(str[0]) {
+	case '"':
+		{
+			int i;
+			string *s = new string;
+			for(i=1; str[i]!='"'; ++i) {
+				s->append(1, str[i]);
+			}
+			
+			p.test.type = LIST_CHAR;
+			p.test.value.listChar = s->c_str();
+		}
+		break;
+
+	case '[':
+		break;
+	}
 }

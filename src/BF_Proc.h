@@ -1,6 +1,9 @@
 #ifndef __BF_PROC_H__
 #define __BF_PROC_H__ 1
+
 #include <stdio.h>
+#include "type.h"
+
 #define	SegSize		4096
 #define	CodeAddr	4000
 #define	DataAddr	4001
@@ -27,8 +30,8 @@ public:
 
 public:
 	char	Fetch();
-	void	Left();
-	void	Right();
+
+	struct Variable	test;
 
 };
 

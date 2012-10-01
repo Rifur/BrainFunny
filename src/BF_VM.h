@@ -20,6 +20,8 @@ public:
 	void	Init(string str);
 	int	Run();
 
+	void	Left(BF_Proc &);
+	void	Right(BF_Proc &);
 	void	Inc(BF_Proc &);
 	void	Dec(BF_Proc &);
 	void	Put(BF_Proc &);
@@ -28,6 +30,7 @@ public:
 	void	EndLoop(BF_Proc &);
 
 	void	Ref(BF_Proc &);
+	void	Assign(BF_Proc &);
 	void	Halt();
 
 private:
