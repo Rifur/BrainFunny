@@ -20,6 +20,7 @@ There is an extension for brainfuck's syntax, not strictly, may be equivalent to
 We append some ideas into brainfunny, such as:
   %100  tells to virtual machine, puts program from address 100.
   #100  jumps to address 100.
+  !     halt.
 
 Consider the program
     $0 =5
