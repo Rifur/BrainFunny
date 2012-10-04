@@ -1,8 +1,8 @@
-CPP = clang++
+CXX = clang++
 
 all:
-	$(CPP) -O3 -c BF_Proc.cpp BF_VM.cpp main.cpp
-	$(CPP) -o bfInt -O3 BF_VM.o BF_Proc.o main.o
+	$(CXX) -o bfInt -Wall -O3 BF_Proc.cpp BF_VM.cpp main.cpp	\
+		-I../include/
 
 clean:
 	rm -f *.o

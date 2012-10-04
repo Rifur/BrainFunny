@@ -100,7 +100,7 @@ int	BF_VM::Run()
 			Terminate();
 			p = ContextSwitch();
 			break;
-			
+
 		}
 
 		++*p->pc;
@@ -154,7 +154,7 @@ void	BF_VM::Inc(BF_Proc & p)
 
 void	BF_VM::Dec(BF_Proc & p)
 {
-	int i = atoi(&p.codeSeg[*p.pc+1]); 
+	int i = atoi(&p.codeSeg[*p.pc+1]);
 	p.dataSeg[*p.dp] -= (i || p.codeSeg[*p.pc+1]=='0' ? i : 1);
 }
 
@@ -178,10 +178,10 @@ void	BF_VM::BeginLoop(BF_Proc & p)
 			}
 			else if(p.codeSeg[*p.pc] == ']') {
 				--p.brk[p.brk_dp];
-			}				
+			}
 		}
 		p.brk[p.brk_dp] = 1;
-	} 
+	}
 	else {
 		++p.brk_dp;
 	}
@@ -226,7 +226,7 @@ void	BF_VM::Ref(BF_Proc & p)
 
 void	BF_VM::Assign(BF_Proc & p)
 {
-	char	*str = &p.codeSeg[*p.pc+1];	
+	char	*str = &p.codeSeg[*p.pc+1];
 	int	tmp = atoi(str);
 
 	if(tmp || str[0]=='0') {
@@ -242,7 +242,7 @@ void	BF_VM::Assign(BF_Proc & p)
 			for(i=1; str[i]!='"'; ++i) {
 				s->append(1, str[i]);
 			}
-			
+
 			p.test.type = LIST_CHAR;
 			p.test.value.listChar = s->c_str();
 		}
