@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	BF_VM *bfVM = new BF_VM();
 
 	for(int i=1; i<argc; ++i) {
-		bfVM->Init(argv[i]);
+		bfVM->Load(argv[i]);
 	}
 
 	bfVM->Run();

@@ -7,17 +7,19 @@
 #include <fstream>
 #include <queue>
 #include "BF_Proc.h"
+#include "BF_Message.h"
 
 #define TickMax 	128
 
 using namespace std;
 
-class BF_VM
+class BF_VM : BF_Message
 {
 public:
 	BF_VM();
 
-	void	Init(string str);
+	void	Init(BF_Proc &);
+	void	Load(string str);
 	int	Run();
 
 	void	Left(BF_Proc &);
@@ -31,7 +33,10 @@ public:
 
 	void	Ref(BF_Proc &);
 	void	Assign(BF_Proc &);
+	void	Jump(BF_Proc &);
 	void	Halt();
+
+	void	SystemCall(BF_Proc *);
 
 private:
 	BF_Proc* ContextSwitch();
@@ -39,6 +44,7 @@ private:
 
 private:
 	queue<BF_Proc *> proc;
+	queue<msg_struct *> msg_pool;
 	int	tick;
 
 };

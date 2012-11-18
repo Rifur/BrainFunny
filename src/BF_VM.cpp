@@ -5,7 +5,13 @@ BF_VM::BF_VM()
 	tick = TickMax;
 }
 
-void	BF_VM::Init(string str)
+void	BF_VM::Init(BF_Proc & p)
+{
+	p.pid = proc.size();
+	proc.push(&p);
+}
+
+void	BF_VM::Load(string str)
 {
 	ifstream fsrc;
 	string	buf;
@@ -46,7 +52,7 @@ int	BF_VM::Run()
 	while(1) {
 		ins = p->Fetch();
 
-		// printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick); 
+		//printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick);
 		//sleep(1);
 		switch(ins)
 		{
@@ -83,7 +89,11 @@ int	BF_VM::Run()
 			break;
 
 		// new syntax
-		case '$':
+		/*
+		*	a)	$2    moves the data pointer to position two.
+		*	b)	If $2=5, $5=3, then $$2 is 3.
+		*/
+		case '$':	
 			Ref(*p);
 			break;
 
@@ -92,9 +102,16 @@ int	BF_VM::Run()
 			break;
 
 		case '#':
-			*p->pc = atoi(&p->codeSeg[*p->pc+1]) - 1;
+			Jump(*p);
 			break;
 
+		case 'S':
+			SystemCall(p);
+			break;
+
+		/*
+		*	Halt the process.
+		*/
 		case '!':
 		case '\0':
 			Terminate();
@@ -224,6 +241,11 @@ void	BF_VM::Ref(BF_Proc & p)
 	*p.dp = tmp;
 }
 
+void	BF_VM::Jump(BF_Proc & p)
+{
+	*p.pc = atoi(&p.codeSeg[*p.pc+1]) - 1;
+}
+
 void	BF_VM::Assign(BF_Proc & p)
 {
 	char	*str = &p.codeSeg[*p.pc+1];
@@ -251,4 +273,48 @@ void	BF_VM::Assign(BF_Proc & p)
 	case '[':
 		break;
 	}
+}
+
+void	BF_VM::SystemCall(BF_Proc * p)
+{
+	char	*str = &p->codeSeg[*(p->pc) + 1];
+	int	tmp = atoi(str);
+
+	printf("SYSTEM CALL #%d by PID: %d\n", tmp, p->pid);
+
+	switch(str[0]) {
+	case '0':
+		{
+			printf("Print %d\n", p->dataSeg[*p->dp]);
+		}
+		break;
+	case '1':
+		{	
+			int 	dst_pid = p->dataSeg[*p->dp];
+			int 	value = p->dataSeg[(*p->dp) + 1];
+			union	msg_body v;
+			v.value = value;
+			msg_pool.push( WriteLetter(p->pid, dst_pid, integer, v));
+
+			printf("Send A Message to pid: %d, msg: %d\n", dst_pid, value);
+		}
+		break;
+
+	case '2':
+		{
+			if(msg_pool.size() > 0 && (msg_pool.front()->dst == p->pid)) {
+				msg_struct* s = msg_pool.front();
+
+				p->dataSeg[*p->dp] = 0;
+				p->dataSeg[(*p->dp) + 1] = s->msg.value;
+
+				msg_pool.pop();
+
+				printf("Get A Message from pid: %d, msg: %d\n", s->dst, s->msg.value);
+			}
+		}
+		break;
+	}
+
+	puts("");
 }
