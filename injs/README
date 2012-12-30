@@ -1,0 +1,4 @@
+example: 
+	$nodejs main.js "h.bf" > test.c
+	$clang test.c
+	$./a.out
