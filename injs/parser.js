@@ -41,7 +41,7 @@ function accept(symbol) {
 		lex.nextToken();
 		return true;
 	} else {
-		return false;	
+		return false;
 	}
 }
 
@@ -59,13 +59,13 @@ function codegen() {
 function start() {
 	codesave("#include <stdio.h>\n#include <stdlib.h>\n");
 	codesave("#define __def void\n");
-	codesave("char *code, *p;\n");
-	
+	codesave("int *code, *p;\n");
+
 	def_region();
 	codegen();
 
-	
-	codesave("int main(void) { code = (char *)calloc(10000, 1); p = &code[0];");
+
+	codesave("int main(void) { code = (int *)calloc(10000, 4); p = &code[0];");
 	main_region();
 	codesave("return 0; }");
 	codegen();
@@ -106,6 +106,8 @@ function def_func() {
 			expect(IDENTIFIER);
 			codesave(funcName);
 
+			//console.log("funcName: " + funcName);
+
 			expect(LPARENTHESES);
 			codesave("(");
 
@@ -114,9 +116,9 @@ function def_func() {
 				expect(IDENTIFIER);
 			} while(accept(COMMA))
 
-			var arglist = /*"int " + */ "argc";
+			var arglist = "argc";
 			for(var i=0; i<arg.length; ++i) {
-				arglist = arglist + /*", char* "*/ ", " + arg[i];
+				arglist = arglist + ", " + arg[i];
 			}
 			codesave(arglist);
 
@@ -126,13 +128,12 @@ function def_func() {
 			codesave(") \\\n");
 
 			expect(LBRACE);
-			//codesave("{ ");
 
 			expression();
 
 			expect(RBRACE);
 			codesave("\n");
-			//codesave(" }\n");
+			
 
 		break;
 	}
@@ -165,11 +166,13 @@ function expression() {
 		break;
 
 		case "READ":
-			codesave("*p = getchar();");
+		case "COMMA":
+			codesave("*p=getchar();");
 		break;
 
 		case "PRINT":
-			codesave("putchar(*p);");
+			//codesave("putchar(*p);");
+			codesave('printf("%d\\n",*p);');
 		break;
 
 		case "FORWARD":
@@ -181,7 +184,7 @@ function expression() {
 		break;
 
 		case "BEGIN_LOOP":
-			codesave("while(*p) { ");
+			codesave("while(*p){");
 		break;
 
 		case "END_LOOP":
@@ -197,14 +200,15 @@ function expression() {
 		break;
 
 		case "IDENTIFIER":
+			// TODO: implementation of syntax has something wrong, needs to fix.
+			//			should know what is variable and what is macro
 			if(FUNC_LIST[d] == null) { // not a function
 				if(accept(NUMBER)) {
-					//codesave("p = " + d + ";");
-					codesave("p = &code[" + d + "];");
+					codesave("p=&code[" + d + "];");
 				}
 				else {
-					//codesave("p = &code[" + d + "];");
-					codesave("p = " + d + ";");
+					//console.log(d + " at line " + lex.linenum);
+					codesave("p=" + d + ";");
 				}
 			} else {
 				invoke_expression();
@@ -213,6 +217,7 @@ function expression() {
 		break;
 
 		default:
+			//
 			return;
 		break;
 	}
@@ -232,7 +237,7 @@ function ref_expression() {
 			lex.nextToken();
 			addr = lex.lookahead();
 			expect(NUMBER);
-			codesave("p = &code[" + addr + "];");
+			codesave("p=&code[" + addr + "];");
 		break;
 	}
 }
@@ -245,7 +250,7 @@ function assign_expression() {
 			lex.nextToken();
 			value = lex.lookahead();
 			expect(NUMBER);
-			codesave("*p = " + value + ";");
+			codesave("*p=" + value + ";");
 		break;
 	}
 }
@@ -265,13 +270,13 @@ function invoke_expression() {
 			do {
 				arg = lex.lookahead();
 				arg_type();
-				
+
 				lex.nextToken();
 			} while(accept(COMMA));
 
 			expect(RPARENTHESES);
 			codesave(");");
-			
+
 		break;
 	}
 }
@@ -316,7 +321,7 @@ function NUMBER() {
 		return true;
 	}
 
-	return false;	
+	return false;
 }
 
 function LPARENTHESES() {
@@ -325,7 +330,7 @@ function LPARENTHESES() {
 		return true;
 	}
 
-	return false;	
+	return false;
 }
 
 function RPARENTHESES() {
@@ -334,7 +339,7 @@ function RPARENTHESES() {
 		return true;
 	}
 
-	return false;	
+	return false;
 }
 
 function LBRACE() {
@@ -343,7 +348,7 @@ function LBRACE() {
 		return true;
 	}
 
-	return false;	
+	return false;
 }
 
 function RBRACE() {
@@ -352,23 +357,23 @@ function RBRACE() {
 		return true;
 	}
 
-	return false;	
+	return false;
 }
 
 function COMMA() {
-	var d = lex.lookahead(); 
+	var d = lex.lookahead();
 	if(lex.pattern == 'COMMA') {
 		return true;
 	}
 
-	return false;	
+	return false;
 }
 
 function END_BLOCK() {
-	var d = lex.lookahead(); 
+	var d = lex.lookahead();
 	if(lex.pattern == 'END_BLOCK') {
 		return true;
 	}
 
-	return false;	
+	return false;
 }
