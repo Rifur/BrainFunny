@@ -1,7 +1,7 @@
 CXX = clang++
-
+CPP = g++
 all:
-	$(CXX) -o bfInt -Wall -O3 BF_Message.cpp BF_Proc.cpp BF_VM.cpp main.cpp	\
+	$(CPP) -o bfInt -Wall -O3 BF_Message.cpp BF_Proc.cpp BF_VM.cpp main.cpp \
 		-I../include/
 
 clean:

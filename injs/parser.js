@@ -57,15 +57,16 @@ function codegen() {
 
 /*	SYNTEX	*/
 function start() {
-	codesave("#include <stdio.h>\n#include <stdlib.h>\n");
+	codesave("#include <stdio.h>\n#include <stdlib.h>\n#include <locale.h>\n");
 	codesave("#define __def void\n");
-	codesave("int *code, *p;\n");
+	codesave("wchar_t *code, *p;\n");
 
 	def_region();
 	codegen();
 
 
-	codesave("int main(void) { code = (int *)calloc(10000, 4); p = &code[0];");
+	codesave("int main(void) { code = (wchar_t *)calloc(10000, sizeof(wchar_t)); p = &code[0];");
+	codesave('setlocale(LC_CTYPE, "");');
 	main_region();
 	codesave("return 0; }");
 	codegen();
@@ -172,7 +173,8 @@ function expression() {
 
 		case "PRINT":
 			//codesave("putchar(*p);");
-			codesave('printf("%d\\n",*p);');
+			//codesave('printf("%d\\n",*p);');
+			codesave('printf("%lc",*p);');
 		break;
 
 		case "FORWARD":

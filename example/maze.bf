@@ -20,6 +20,7 @@ def endIf(z) {
 	zero(z) ]
 }
 
+
 def Clean(a) {
 	a [-]
 }
@@ -36,6 +37,20 @@ def Copy(s, d, t) {
 def Minus_withoutClean(s, d, t) {
 	s [ d- t+ s- ]
 	t [ s+ t- ]
+}
+
+def AND(a, b, f) {
+	Clean(f) a[ b [ f+ zero(0) ] zero(0)]
+}
+
+def OR(a, b, f) {
+	Clean(f) 
+	a [ f+ zero(0) ]
+	b [ f+ zero(0) ]
+}
+
+def NOT(a, f) {
+	f [-]+ a [ Clean(f) zero(0) ]
 }
 
 def IsGreater(a, b, t1, t2, f) {
@@ -61,14 +76,17 @@ def IsEqual(a, b, t1, t2, f) {
 	Copy(b, t2, f)
 	Clean(f)
 	While(t1)
-		f+ b[f- zero(0)]
+		f+ t1- t2 [- f- zero(0)]
 	endWhile(t1)
-	f [ f[-] ]
+
+	While(t2)
+		f+ t2- t1 [- f- zero(0)]
+	endWhile(t2)	
+	NOT(f, t1)
+	Clean(f) t1 [ f+ t1- ]
 }
 
-def NOT(a, f) {
-	f [-] + a [ Clean(f) zero(0) ]
-}
+
 
 def IsNotSmaller(a, b, t1, t2, f) {
 	IsSmaller(a, b, t1, t2, f)
@@ -79,8 +97,8 @@ def IsNotSmaller(a, b, t1, t2, f) {
 
 def IsNotEqual(a, b, t1, t2, f) {
 	IsEqual(a, b, t1, t2, f)
-	Clean(t1)  f [ t1+ f- ]
-	NOT(t1, f)
+	NOT(f, t1)
+	f[-] t1 [ f+ zero(0) ]
 }
 
 def Add(a, b, c, t) {
@@ -103,15 +121,17 @@ def Mul(a, b, c, ta, t) {
 
 	While(ta)
 		ta - 
-		Copy(b, c, t)
+		Copy_withoutClean(b, c, t)
 	endWhile(ta)
 }
+
+
 
 def Div(a, b, c, r, t1, t2, t3) {
 	c[-] r[-] t1[-] t2[-] t3[-]
 	Copy(b, r, t2)
 
-	If(b)
+	If(a)
 		IsNotSmaller(r, a, t1, t2, t3)
 		While(t3)
 			Sub(r, a, t2, t3)
@@ -141,11 +161,136 @@ def Xor(a, b, c, ta, tb, t, ac, bc, ar, br, t1, t2, t3) {
 }
 
 def RandomLCG(prex, m, a, c, tx, t1, t2, t3, t4) {
-	tx[-]t1[-]t2[-]t3[-]t4[-]
+	tx[-] t1[-] t2[-] t3[-] t4[-]
 	Mul(a, prex, t1, t2, t3)
 	Add(t1, c, t2, t3)
 	Copy(t2, prex, t3)
 	Div(m, prex, t1, tx, t2, t3, t4)
+	Copy(tx, prex, t1)
+}
+
+def testMul(a,b,c,d,e,f,g) {
+
+	a =0
+	b =0
+	Mul(a, b, c, d, e)
+	d =0
+	IsNotEqual(c, d, e, f, g)
+	If(g)
+		a. b. c. d.
+	endIf(0)
+
+	a =1
+	b =1
+	Mul(a, b, c, d, e)
+	d =1
+	IsNotEqual(c, d, e, f, g)
+	If(g)
+		a. b. c. d.
+	endIf(0)
+
+	a =5
+	b =3
+	Mul(a, b, c, d, e)
+	d =15
+	IsNotEqual(c, d, e, f, g)
+	If(g)
+		a. b. c. d.
+	endIf(0)
+
+	a =8
+	b =7
+	Mul(a, b, c, d, e)
+	d =56
+	IsNotEqual(c, d, e, f, g)
+	If(g)
+		a. b. c. d.
+	endIf(0)
+
+}
+
+def testDiv(a,b,c,d,e,f,g,h,i) {
+
+	a =0
+	b =0
+	Div(a, b, c, d, e, h, i)
+	i =0
+	IsNotEqual(c, i, e, f, g)
+	i =0
+	IsNotEqual(d, i, e, f, h)
+	OR(g, h, i)
+	If(i)
+		a. b. c. d.
+	endIf(0)
+
+	a =1
+	b =0
+	Div(a, b, c, d, e, h, i)
+	i =0
+	IsNotEqual(c, i, e, f, g)
+	i =0
+	IsNotEqual(d, i, e, f, h)
+	OR(g, h, i)
+	If(i)
+		a. b. c. d.
+	endIf(0)
+
+	a =3
+	b =8
+	Div(a, b, c, d, e, h, i)
+	i =2
+	IsNotEqual(c, i, e, f, g)
+	i =2
+	IsNotEqual(d, i, e, f, h)
+	OR(g, h, i)
+	If(i)
+		a. b. c. d.
+	endIf(0)
+
+	a =11
+	b =17
+	Div(a, b, c, d, e, h, i)
+	i =1
+	IsNotEqual(c, i, e, f, g)
+	i =6
+	IsNotEqual(d, i, e, f, h)
+	OR(g, h, i)
+	If(i)
+		a. b. c. d.
+	endIf(0)
+
+	a =17
+	b =11
+	Div(a, b, c, d, e, h, i)
+	i =0
+	IsNotEqual(c, i, e, f, g)
+	i =11
+	IsNotEqual(d, i, e, f, h)
+	OR(g, h, i)
+	If(i)
+		a. b. c. d.
+	endIf(0)
+
+}
+
+def Random(y) {
+	$1000 =997
+	$1001 =65
+	$1002 =7
+
+	Copy(y, 1003, 1008)
+
+	RandomLCG(1003, 1000, 1001, 1002, 1004, 1005, 1006, 1007, 1008)
+	Copy(1003, y, 1008)
+}
+
+def RandToBin(y, b) {
+	Random(y)
+	$1002 =2
+	Div(1002, y, 1001, 1003, 1004, 1005, 1006)
+	
+	Clean(b)
+	$1003 [ b+ zero(0) ]
 }
 
 END
@@ -153,19 +298,10 @@ MAIN
 
 $0 [-]
 $1 [-]+
-$100 =256
-$101 =65
-$102 =27
-$103 =1
-$201 =0
-$202 =0
-$203 =0
-$204 =0
 
-RandomLCG(103, 100, 101, 102, 103, 201, 202, 203, 204)
-Copy(201, 103, 204)
-RandomLCG(103, 100, 101, 102, 103, 201, 202, 203, 204)
-Copy(201, 103, 204)
+$100 +
+$200=9585
 
-Div(101, 100, 201, 202, 203, 204, 205)
-$201 .
+$1 [ RandToBin(100, 101) Add(200, 101, 102, 103) $102 .  $1 ]
+
+
