@@ -13,6 +13,7 @@ module.exports = {
 
 	pattern : { },
 	linenum : { },
+	currentToken : { },
 
 	input : function (src) {
 		var self = this;
@@ -62,6 +63,7 @@ module.exports = {
 			d = String(text.match("^" + token.tokens[self.pattern]));
 			if(d != 'null') {
 				self.currentTokenLength = d.length;
+				self.currentToken = d;
 				return d;	// match
 			}
 		}

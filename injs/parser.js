@@ -1,3 +1,16 @@
+/*
+
+Grammar	 ::= Def_region Main_region
+Def_region ::= "DEF" Definition "END"
+Definition ::= ("def" Identifier "(" arg_list ")" "{" expression "}") *
+arg_list ::= arg ("," arg)*
+Main_region ::= "MAIN" expression*
+expression ::= "+" | "-" | "<" | ">" | "[" | "]" | "$"[0-9]+ | "="[0-9]+ | Def_head
+Def_head ::= Identifier "(" arg_list ")"
+arg ::= const | variable
+
+*/
+
 var	fs = require("fs"),
 	path = require('path'),
 	util = require('util'),
@@ -5,6 +18,9 @@ var	fs = require("fs"),
 	CODE = "",
 	FUNC_LIST = new Array();
 	;
+
+var funcName = "";
+var CurrentRegion = "";
 
 
 module.exports = {
@@ -19,11 +35,10 @@ module.exports = {
 
 function error_msg(msg) {
 	if(msg == undefined) {
-		codesave("line " + lex.linenum + " : syntax error");
+		console.log("line " + lex.linenum + " : syntax error " + "Unrecongnized token: " + lex.currentToken);
 	} else {
-		codesave("line " + lex.linenum + " : " + msg);
+		console.log("line " + lex.linenum + " : " + msg);
 	}
-	process.exit();
 }
 
 function expect(symbol) {
@@ -31,7 +46,7 @@ function expect(symbol) {
 		lex.nextToken();
 		return true;
 	} else {
-		error_msg("Unrecongnized token");
+		error_msg("Unrecongnized token: " + lex.currentToken + " by " + symbol.name);
 		return false;
 	}
 }
@@ -58,17 +73,19 @@ function codegen() {
 /*	SYNTEX	*/
 function start() {
 	codesave("#include <stdio.h>\n#include <stdlib.h>\n#include <locale.h>\n");
-	codesave("#define __def void\n");
+	codesave("#define wchar_t int\n");
 	codesave("wchar_t *code, *p;\n");
 
+	CurrentRegion = "DEF";
 	def_region();
-	codegen();
-
 
 	codesave("int main(void) { code = (wchar_t *)calloc(10000, sizeof(wchar_t)); p = &code[0];");
 	codesave('setlocale(LC_CTYPE, "");');
+
+	CurrentRegion = "MAIN";
 	main_region();
-	codesave("return 0; }");
+	
+	codesave("\nfree(code); return 0; }");
 	codegen();
 }
 
@@ -76,9 +93,9 @@ function def_region() {
 	var d = lex.lookahead();
 	switch(lex.pattern) {
 		default:
-			lex.nextToken();
+			// nothing
 		break;
-
+		
 		case 'DEF_BLOCK':
 			lex.nextToken();
 
@@ -92,8 +109,7 @@ function def_region() {
 
 function def_func() {
 	var d = lex.lookahead();
-	var funcName = "";
-	var arg = new Array();
+	
 	switch(lex.pattern) {
 		default:
 			lex.nextToken();
@@ -107,43 +123,50 @@ function def_func() {
 			expect(IDENTIFIER);
 			codesave(funcName);
 
-			//console.log("funcName: " + funcName);
-
 			expect(LPARENTHESES);
 			codesave("(");
-
-			do {
-				arg.push(lex.lookahead());
-				expect(IDENTIFIER);
-			} while(accept(COMMA))
-
-			var arglist = "argc";
-			for(var i=0; i<arg.length; ++i) {
-				arglist = arglist + ", " + arg[i];
-			}
-			codesave(arglist);
-
-			FUNC_LIST[funcName] = arg.length;
-
+				arg_list();
 			expect(RPARENTHESES);
 			codesave(") \\\n");
 
+			
 			expect(LBRACE);
-
-			expression();
-
+				expression();
 			expect(RBRACE);
 			codesave("\n");
 			
-
 		break;
 	}
+}
+
+function arg_list() {
+	var d = lex.lookahead();
+	var arg = new Array();
+
+	switch(lex.pattern) {
+		case 'IDENTIFIER':
+			do {
+				expect(IDENTIFIER);
+				arg.push(lex.currentToken);
+			} while(accept(COMMA))
+		break;
+	}
+
+	var arglist = "argc";
+	for(var i=0; i<arg.length; ++i) {
+		arglist = arglist + ", " + arg[i];
+	}
+	codesave(arglist);
+
+	FUNC_LIST[funcName] = arg.length;
+
 }
 
 function main_region() {
 	var d = lex.lookahead();
 	switch(lex.pattern) {
 		default:
+			expression();
 		break;
 
 		case 'MAIN_BLOCK':
@@ -202,15 +225,13 @@ function expression() {
 		break;
 
 		case "IDENTIFIER":
-			// TODO: implementation of syntax has something wrong, needs to fix.
-			//			should know what is variable and what is macro
 			if(FUNC_LIST[d] == null) { // not a function
-				if(accept(NUMBER)) {
-					codesave("p=&code[" + d + "];");
+				if(NUMBER()) {
+					ref_expression();
 				}
 				else {
-					//console.log(d + " at line " + lex.linenum);
 					codesave("p=" + d + ";");
+					//console.log(d + " at line " + lex.linenum);
 				}
 			} else {
 				invoke_expression();
@@ -226,7 +247,6 @@ function expression() {
 
 	lex.nextToken();
 
-	//process.nextTick( expression );
 	expression();
 }
 
@@ -260,7 +280,6 @@ function assign_expression() {
 
 function invoke_expression() {
 	var d = lex.lookahead();
-	var arg = 0;
 	switch(lex.pattern) {
 		case "IDENTIFIER":
 			codesave(d);
@@ -269,13 +288,8 @@ function invoke_expression() {
 			expect(LPARENTHESES);
 			codesave("(" + FUNC_LIST[d]);
 
-			do {
-				arg = lex.lookahead();
-				arg_type();
-
-				lex.nextToken();
-			} while(accept(COMMA));
-
+				parameter_list();
+			
 			expect(RPARENTHESES);
 			codesave(");");
 
@@ -283,15 +297,41 @@ function invoke_expression() {
 	}
 }
 
+function parameter_list() {
+	var d = lex.lookahead();
+
+	switch(lex.pattern) {
+		case 'IDENTIFIER':
+		case 'REF':
+			do {
+				arg_type();
+				lex.nextToken();
+			} while(accept(COMMA));
+		break;
+
+		case 'RPARENTHESES':
+		break;
+
+		default:
+			error_msg();
+		break;
+	}
+}
+
 function arg_type() {
 	var d = lex.lookahead();
 	switch(lex.pattern) {
-		case "NUMBER":
-			codesave(", &code[" + d + "]");//codesave(", " + d + "");
+		case "REF":
+			lex.nextToken();
+			codesave(", &code[" + lex.lookahead() + "]");
 		break;
 
 		case "IDENTIFIER":
 			codesave("," +  d);
+		break;
+
+		default:
+			error_msg();
 		break;
 	}
 }
@@ -301,7 +341,6 @@ function DEF_BLOCK() {
 	var d = lex.lookahead();
 	if(lex.pattern == 'DEF_BLOCK') {
 		codesave('DEF_BLOCK ' + d);
-		//lex.nextToken();
 		return true;
 	}
 
