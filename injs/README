@@ -1,4 +1,34 @@
-example: 
-	$nodejs main.js "h.bf" > test.c
-	$clang test.c
-	$./a.out
+Copyright (c) 2012, 2013, Rifur Ni.
+
+This implementation is using nodejs to write our own simple recursion descent parser for Brainfuck-extension. Parser reads in BF-ext code with following syntax, and print out with C language format. 
+
+Parser's prototype is from my small project, you can find it in github: Rifur/LePa-in-nodeJS.
+
+SYNTAX:
+There is main structure of BF-ext, starting with DEF as macro definitions region and ending with END, the MAIN is the label of BF-exts' body.
+
+DEF
+	//...some code. oops, we don't have comment now > <" 
+	def func_name(arg) {
+		//...BF-ext statements
+	}
+END
+MAIN
+	//...some code. oops, we don't have comment now > <"
+	//...BF-ext statements
+
+BF-ext statements' format contains the eight instructions of brainfuck, and our extensions:
+I:	$5	, means the data cell #5
+II:	=8	, means assign 8 to current cell
+III:	func_name(arg),	means to use macro "func_name" with argument(s). 
+
+Note, argument in the definition region DEF...END can be an alias name given by macro, but in the MAIN region, it shall be a constant value as the cell number.
+
+
+Example: 
+	>nodejs main.js ../example/maze.bf > maze.c
+	>clang maze.c -o maze
+	>./maze
+
+or
+	>make maze
