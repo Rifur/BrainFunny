@@ -101,12 +101,12 @@ def IsNotEqual(a, b, t1, t2, f) {
 	f[-] t1 [ f+ zero($0) ]
 }
 
-def Add(a, b, c, t) {
+def Add(a, b, c) {
 	Clean(c)
-	Clean(t)
-	Copy_withoutClean(a, c, t)
-	Clean(t)
-	Copy_withoutClean(b, c, t)
+	Clean($1000)
+	Copy_withoutClean(a, c, $1000)
+	Clean($1000)
+	Copy_withoutClean(b, c, $1000)
 }
 
 def Sub(a, b, c, t) {
@@ -124,8 +124,6 @@ def Mul(a, b, c, ta, t) {
 		Copy_withoutClean(b, c, t)
 	endWhile(ta)
 }
-
-
 
 def Div(a, b, c, r, t1, t2, t3) {
 	c[-] r[-] t1[-] t2[-] t3[-]
@@ -163,7 +161,7 @@ def Xor(a, b, c, ta, tb, t, ac, bc, ar, br, t1, t2, t3) {
 def RandomLCG(prex, m, a, c, tx, t1, t2, t3, t4) {
 	tx[-] t1[-] t2[-] t3[-] t4[-]
 	Mul(a, prex, t1, t2, t3)
-	Add(t1, c, t2, t3)
+	Add(t1, c, t2)
 	Copy(t2, prex, t3)
 	Div(m, prex, t1, tx, t2, t3, t4)
 	Copy(tx, prex, t1)
@@ -274,9 +272,9 @@ def testDiv(a,b,c,d,e,f,g,h,i) {
 }
 
 def Random(y) {
-	$1000 =997
+	$1000 =256
 	$1001 =65
-	$1002 =7
+	$1002 =27
 
 	Copy(y, $1003, $1008)
 
@@ -299,8 +297,8 @@ MAIN
 $0 [-]
 $1 [-]+
 
-$100 +
-$200=9585
+$2 +
+$4 =9585
 
-$1 [ RandToBin($100, $101) Add($200, $101, $102, $103) $102 .  $1 ]
+$1 [ RandToBin($2, $3) Add($4, $3, $5) $5 . $1 ]
 

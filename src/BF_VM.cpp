@@ -52,7 +52,7 @@ int	BF_VM::Run()
 	while(1) {
 		ins = p->Fetch();
 
-		//printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick);
+		printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick);
 		//sleep(1);
 		switch(ins)
 		{
@@ -167,12 +167,14 @@ void	BF_VM::Inc(BF_Proc & p)
 {
 	int i = atoi(&p.codeSeg[*p.pc+1]);
 	p.dataSeg[*p.dp] += (i || p.codeSeg[*p.pc+1]=='0' ? i : 1);
+	p.dataSeg[*p.dp] %= 256;
 }
 
 void	BF_VM::Dec(BF_Proc & p)
 {
 	int i = atoi(&p.codeSeg[*p.pc+1]);
 	p.dataSeg[*p.dp] -= (i || p.codeSeg[*p.pc+1]=='0' ? i : 1);
+	p.dataSeg[*p.dp] %= 256;
 }
 
 void	BF_VM::Put(BF_Proc & p)
