@@ -86,8 +86,6 @@ def IsEqual(a, b, t1, t2, f) {
 	Clean(f) t1 [ f+ t1- ]
 }
 
-
-
 def IsNotSmaller(a, b, t1, t2, f) {
 	IsSmaller(a, b, t1, t2, f)
 	Clean(t1)  f [ t1+ f- ]
@@ -117,8 +115,8 @@ def Sub(a, b, c, t) {
 
 def Mul(a, b, c, ta, t) {
 	Clean(c)
-	Copy(a, ta, t)
 
+	Copy(a, ta, t)
 	While(ta)
 		ta - 
 		Copy_withoutClean(b, c, t)
@@ -298,7 +296,7 @@ $0 [-]
 $1 [-]+
 
 $2 +
-$4 =9585
+$9585 =9585
 
-$1 [ RandToBin($2, $3) Add($4, $3, $5) $5 . $1 ]
+$1 [ RandToBin($2, $3) Add($9585, $3, $5) $5 . $1 ]
 

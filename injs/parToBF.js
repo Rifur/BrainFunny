@@ -1,13 +1,12 @@
 /*
 
-Grammar	 ::= Def_region Main_region
+Brainfuck-extension	 ::= Def_region Main_region
 Def_region ::= "DEF" Definition "END"
 Definition ::= ("def" Identifier "(" arg_list ")" "{" expression "}") *
-arg_list ::= arg ("," arg)*
+arg_list ::= arg ("," arg)* | 
+expression ::= "+" | "-" | "<" | ">" | "[" | "]" | "$"[0-9]+ | "="[0-9]+ | Identifier "(" arg_list ")"
 Main_region ::= "MAIN" expression*
-expression ::= "+" | "-" | "<" | ">" | "[" | "]" | "$"[0-9]+ | "="[0-9]+ | Def_head
-Def_head ::= Identifier "(" arg_list ")"
-arg ::= const | variable
+arg ::= "$"constant | variable
 
 */
 
