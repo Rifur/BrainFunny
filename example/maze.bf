@@ -31,7 +31,9 @@ def Copy_withoutClean(s, d, t) {
 }
 
 def Copy(s, d, t) {
-	d [-] t [-] Copy_withoutClean(s, d, t)
+	Clean(d)
+	Clean(t)
+	Copy_withoutClean(s, d, t)
 }
 
 def Minus_withoutClean(s, d, t) {
@@ -78,7 +80,7 @@ def IsEqual(a, b, t1, t2, f) {
 	While(t1)
 		f+ t1- t2 [- f- zero($0)]
 	endWhile(t1)
-
+	
 	While(t2)
 		f+ t2- t1 [- f- zero($0)]
 	endWhile(t2)	
@@ -99,12 +101,12 @@ def IsNotEqual(a, b, t1, t2, f) {
 	f[-] t1 [ f+ zero($0) ]
 }
 
-def Add(a, b, c) {
+def Add(a, b, c, t) {
 	Clean(c)
-	Clean($1000)
-	Copy_withoutClean(a, c, $1000)
-	Clean($1000)
-	Copy_withoutClean(b, c, $1000)
+	Clean(t)
+	Copy_withoutClean(a, c, t)
+	Clean(t)
+	Copy_withoutClean(b, c, t)
 }
 
 def Sub(a, b, c, t) {
@@ -126,7 +128,6 @@ def Mul(a, b, c, ta, t) {
 def Div(a, b, c, r, t1, t2, t3) {
 	c[-] r[-] t1[-] t2[-] t3[-]
 	Copy(b, r, t2)
-
 	If(a)
 		IsNotSmaller(r, a, t1, t2, t3)
 		While(t3)
@@ -159,7 +160,7 @@ def Xor(a, b, c, ta, tb, t, ac, bc, ar, br, t1, t2, t3) {
 def RandomLCG(prex, m, a, c, tx, t1, t2, t3, t4) {
 	tx[-] t1[-] t2[-] t3[-] t4[-]
 	Mul(a, prex, t1, t2, t3)
-	Add(t1, c, t2)
+	Add(t1, c, t2, t3)
 	Copy(t2, prex, t3)
 	Div(m, prex, t1, tx, t2, t3, t4)
 	Copy(tx, prex, t1)
@@ -270,12 +271,11 @@ def testDiv(a,b,c,d,e,f,g,h,i) {
 }
 
 def Random(y) {
-	$1000 =256
+	$1000 =997
 	$1001 =65
-	$1002 =27
+	$1002 =7
 
 	Copy(y, $1003, $1008)
-
 	RandomLCG($1003, $1000, $1001, $1002, $1004, $1005, $1006, $1007, $1008)
 	Copy($1003, y, $1008)
 }
@@ -289,6 +289,7 @@ def RandToBin(y, b) {
 	$1003 [ b+ zero($0) ]
 }
 
+
 END
 MAIN
 
@@ -298,5 +299,5 @@ $1 [-]+
 $2 +
 $9585 =9585
 
-$1 [ RandToBin($2, $3) Add($9585, $3, $5) $5 . $1 ]
-
+$9585.
+$1 [ RandToBin($2, $3) Add($9585, $3, $4, $5) $4 . $1 ]

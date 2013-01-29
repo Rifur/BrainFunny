@@ -30,7 +30,7 @@ void	BF_VM::Load(string str)
 		}
 
 		const char *s = buf.c_str();
-		for(int i=0; i<buf.length(); ++i) {
+		for(int i=0; i<(int)buf.length(); ++i) {
 			p.codeSeg[p.codeSegLen] = s[i];
 
 			switch(s[i]) {
@@ -179,8 +179,8 @@ void	BF_VM::Dec(BF_Proc & p)
 
 void	BF_VM::Put(BF_Proc & p)
 {
-	printf("%d\n", p.dataSeg[*p.dp]);
-	//putchar(p.dataSeg[*p.dp]);
+	//printf("%d\n", p.dataSeg[*p.dp]);
+	putchar(p.dataSeg[*p.dp]);
 }
 
 void	BF_VM::Get(BF_Proc & p)
