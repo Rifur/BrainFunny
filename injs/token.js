@@ -14,6 +14,8 @@ module.exports = {
 
 		'LPARENTHESES' : "\\(", 
 		'RPARENTHESES' : "\\)", 
+		'ZERO_LOOP' : "\\(",
+		'ENDZERO_LOOP' : "\\)",
 		'HALT'	:	"!",
 
 		'COMMA' : ',',

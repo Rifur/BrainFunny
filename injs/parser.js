@@ -72,8 +72,9 @@ function codegen() {
 /*	SYNTEX	*/
 function start() {
 	codesave("#include <stdio.h>\n#include <stdlib.h>\n#include <locale.h>\n");
-	codesave("#define wchar_t int\n");
+	codesave("#define wchar_t char\n");
 	codesave("wchar_t *code, *p;\n");
+	codesave("int pc=0;")
 
 	CurrentRegion = "DEF";
 	def_region();
@@ -181,37 +182,47 @@ function expression() {
 
 	switch(lex.pattern) {
 		case "INC":
-			codesave("++*p;");
+			codesave("++code[pc];");
 		break;
 
 		case "DEC":
-			codesave("--*p;");
+			codesave("--code[pc];");
 		break;
 
 		case "READ":
 		case "COMMA":
-			codesave("*p=getchar();");
+			codesave("code[pc]=getchar();");
 		break;
 
 		case "PRINT":
 			//codesave("putchar(*p);");
-			//codesave('printf("%d\\n",*p);');
-			codesave('printf("%lc",*p);');
+			codesave('printf("[%d]=%d\\n",pc,code[pc]);');
+			//codesave('printf("%lc",*p);');
 		break;
 
 		case "FORWARD":
-			codesave("++p;");
+			codesave('++pc;');
 		break;
 
 		case "BACKWARD":
-			codesave("--p;");
+			codesave("--pc;");
 		break;
 
 		case "BEGIN_LOOP":
-			codesave("while(*p){");
+			codesave("while(code[pc]){");
 		break;
 
 		case "END_LOOP":
+			codesave("}");
+		break;
+
+		case "LPARENTHESES":
+		case "ZERO_LOOP":
+			codesave("while(!(*p)){");
+		break;
+
+		case "RPARENTHESES":
+		case "ENDZERO_LOOP":
 			codesave("}");
 		break;
 

@@ -208,6 +208,16 @@ function expression() {
 			codesave("]");
 		break;
 
+		case "LPARENTHESES":
+		case "ZERO_LOOP":
+			codesave("(");
+		break;
+
+		case "RPARENTHESES":
+		case "ENDZERO_LOOP":
+			codesave(")");
+		break;
+
 		case "REF":
 			ref_expression();
 		break;

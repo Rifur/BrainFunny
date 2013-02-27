@@ -1,4 +1,5 @@
 #include "BF_VM.h"
+#include "windows.h"
 
 BF_VM::BF_VM()
 {
@@ -52,8 +53,8 @@ int	BF_VM::Run()
 	while(1) {
 		ins = p->Fetch();
 
-		//printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick);
-		//sleep(1);
+		printf("[%d] = %d \t@[%d] %c  \tloop [%d]=%d pid %d %d tick %d\n", *p->dp, p->dataSeg[*p->dp], *p->pc, p->codeSeg[*p->pc]=='\n'? ' ':p->codeSeg[*p->pc], p->brk_dp, p->brk[p->brk_dp], proc.front()->pid, proc.back()->pid, tick);
+		Sleep(50);
 		switch(ins)
 		{
 		case '>':

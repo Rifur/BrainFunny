@@ -2,6 +2,10 @@ Hello:
 	nodejs main.js ../example/Hello.bf > Hello.c
 	gcc Hello.c -o Hello
 
+cat:
+	nodejs main.js ../example/cat.bf > cat.c
+	gcc cat.c -o cat
+
 maze:
 	nodejs main.js ../example/maze.bf > maze.c
 	gcc maze.c -o maze
@@ -25,8 +29,15 @@ intrII:
 	nodejs main.js ../example/interpreterII.bf > interpreterII.c
 	gcc interpreterII.c -o interpreterII
 
+intrIII:
+	nodejs mainBFextToBF.js ../example/interpreterIII.bf > interpreterIII.c
+	gcc -E -P interpreterIII.c -o interpreterIII.txt
+	nodejs main.js interpreterIII.txt > interpreterIII.c
+	gcc -O3 interpreterIII.c -o interpreterIII
+	interpreterIII
+
 clean-windows:
-	del maze.exe maze.c
+	del interpreter Hello mazew maze interpreter interpreterII *.txt *.out Hello.c maze.c interpreter.c interpreterII.c mazew.c
 
 clean:
-	rm -rf interpreter Hello maze interpreter interpreterII *.txt *.out Hello.c maze.c interpreter.c interpreterII.c
+	rm -rf interpreter Hello mazew maze interpreter interpreterII *.txt *.out Hello.c maze.c interpreter.c interpreterII.c mazew.c
